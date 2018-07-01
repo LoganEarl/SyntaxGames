@@ -16,6 +16,8 @@ public partial class PlayGame : System.Web.UI.Page
             Games.Game g = DatabaseHelper.GetInstance().GetGameOfID(gameID, Server.MapPath(""));
             GameDisplayManger gd = new GameDisplayManger(g);
 
+            gameNameTxt.InnerText = g.gameName;
+
             if (g != null && g.SourceExists())
                 GameSlot.InnerHtml = gd.GetAsCanvasHTML();
         }

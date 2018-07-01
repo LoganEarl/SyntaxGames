@@ -3,7 +3,7 @@
 <asp:Content ContentPlaceHolderID="PageContent" runat="server">
     <div class="col-lg-12"> 
           <div class="panel panel-primary">
-                <div class="panel-heading">Tanks</div>
+                <div class="panel-heading" id="gameNameTxt" runat="server">Tanks</div>
                 <div class="panel-body" id="GameSlot" runat="server">
                     
                 </div>

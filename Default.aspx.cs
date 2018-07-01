@@ -19,8 +19,8 @@ public partial class _Default : System.Web.UI.Page
             string gameHTML = newRow;
             for (int i = 0; i < allGames.Count; i++)
             {
-                if (i % 3 == 0 && i != 0)
-                    gameHTML += rowEnd + "\n" + newRow;
+                if (i % 3 == 0 && i != 0)gameHTML += rowEnd + "\n" + newRow;
+
                 gameHTML += new GameDisplayManger(allGames[i]).GetAsDisplayWindowHTML();
             }
             gameHTML += rowEnd;
