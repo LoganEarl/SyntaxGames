@@ -1,0 +1,711 @@
+void keyPressed() {
+	keys[keyCode] = true;
+}    
+
+{
+        smooth();
+        
+    //player values
+        var playerX = 75;
+        var playerY = 400;
+        var gravity = 0;
+        var canjump = false;
+        var eyeX = 5;
+        
+        size(500,500);
+		frameRate(60);
+
+    //the life of each partical you can change it if you want, but 12 is ideal
+        var particalLife = 13;
+        
+        var level = 0;
+    //the players costume
+        var costume = 0;
+        
+        var firstTick = true;//DO NOT CHANGE OR ELSE IT WILL CRASH THE GAME!!!!!!! IF U DO, IT DRAWS HUNDREDS OF EACH ITEM A SECOND, DONT CHANGE IT! 
+        
+    //number of coins you have
+        var coinNum = 0;
+        
+    //the array that stores what the text is saying at the top of the screen
+        var levelText = ["We destroyed\nthe world.","We got in a nuclear war,\nand everyone lost.","Then, the methane crystals melted\nand the worlds tempuature\nrised by 20 degrees\ncentigrade.","everything died, exept me", "I must save the world"];
+        var textDisplay = 0;
+        
+    //if your presing a key stuff
+        var keys = [];
+        
+        keyReleased = function() {
+            keys[keyCode] = false;
+            costume = 0;
+        };
+        
+    //arrays that store objects for the coins and blocks ext..
+    var coins = [];
+    var fallBlocks = [];
+    var blocks = [];
+    var lavas = [];
+    var spikes = [];
+    var portals = [];
+    var trampolines = [];
+        
+}//variable stuff
+    
+    {
+        
+    //the partical cunstructor function
+        var partical = function(x, y, xoffset, yoffset) {
+            this.x = x+xoffset;
+            this.y = y+yoffset;
+            this.life = particalLife;
+            this.lifetime = 0;
+            this.timer = 0;
+        };
+    //making everything about the particals
+        partical.prototype.draw = function() {
+        noStroke();    
+    //saying,"if the partical is living, do all this shizzle".
+            
+            if(this.lifetime < this.life) {
+                fill(255, 255, 255);
+                ellipse(this.x, this.y, 5, 5);
+                this.x += cos(radians(frameCount/4));
+                this.y += sin(radians(frameCount/4));
+            }else{
+    //saying,"if the partical is dead, do all this shizzle".
+                this.x = playerX+random(-10, 10)+12.5;
+                this.y = playerY+random(-10, 10)+12.5;
+                if(this.timer < random(10, 25)) {
+                    this.timer++;
+                }else {
+                    this.lifetime = 0;
+                    this.timer = 0;
+                }
+            }
+            //the life of the partical increases
+            this.lifetime+= 1;
+        };
+        
+    //the array that stores the partical values.    
+        var particles = [];
+    //pushing new values into the partical arrays that we made to store them.
+        for(var i = 0; i < 10; i+= 0.5) {
+            particles.push(new partical(playerX+12.5, playerY+12.5, random(-12.5, 12.5) , random(-12.5, 12.5)));
+            
+        }
+}//partical stuff
+    
+    {
+        var Tsnow = function() {
+            this.x = random(0,  500);
+            this.y = random(500, -500);
+            this.z = random(25, 75);
+            this.speed = this.z/30;
+        };
+        Tsnow.prototype.draw = function() {
+            if(this.y > 505) {
+                this.y = random(0, -300);
+                this.x = random(0, 500);
+                this.z = random(25, 75);
+                this.speed = this.z/30;
+            }
+            pushMatrix();
+            translate(this.x, this.y);
+            fill(26, 255, 0);
+            ellipse(0, 0, this.z/5, this.z/5);
+            popMatrix();
+            this.y+= this.speed;
+        };
+    var TsnowBalls = [];
+    
+    for(var i = 0; i < 50; i++) {
+        TsnowBalls.push(new Tsnow());
+    }
+    
+    }//toxic snow
+    
+    {
+        
+    var player = function() {
+        
+    //drawing the players particals
+        for(var i = 0; i < particles.length; i++) {
+            particles[i].draw();
+            particles[i].y -= 0.5;
+        }
+        
+    //drawing the player
+        fill(255, 255, 255);
+        rect(playerX, playerY, 25, 25, 4);
+        fill(0);
+        rect(playerX+eyeX, playerY+3, 7, 13, 5);
+        rect(playerX+eyeX+9, playerY+3, 7, 13, 5);
+    //moving left, right, up, and down.
+        if(keys[LEFT]) {
+            playerX-= 3;
+            costume = 2;
+            eyeX-= 0.5;
+        }else if(keys[RIGHT]) {
+            playerX+= 3;
+            costume = 1;
+            eyeX+= 0.5;
+        }if(keys[UP] && canjump) {
+            gravity = -4;
+        }
+    //checking if you fell off the map
+        if(playerY > 600) {
+            playerX = 75;
+            playerY = 400;
+        }    
+    //logic stuff like constraining the player x and y value, stuff like that...
+        gravity+= 0.09;
+        playerY+= gravity;
+        playerX =constrain(playerX, 0, 475);
+        if(playerY < 0) {
+            gravity = 1;
+        }
+        eyeX =constrain(eyeX, 0, 23-13);
+        gravity = constrain(gravity, -Infinity, 4);
+        canjump = false;
+        
+    };
+    
+}//player
+    
+    {
+        
+    //making the cunstructor function for the blocks
+        var block = function(x, y){
+            this.x = x;
+            this.y = y;
+        };
+    //drawing and collision detecting the blocks
+        block.prototype.draw = function() {
+        noStroke();
+            fill(120, 116, 120);
+            rect(this.x, this.y, 25, 25);
+            fill(97, 93, 93);
+            triangle(this.x, this.y, this.x+12.5, this.y+12.5, this.x, this.y+25);
+            fill(69, 68, 68);
+            triangle(this.x, this.y+25, this.x+12.5, this.y+12.5, this.x+25, this.y+25);
+            if(playerX > this.x-50 && playerX < this.x+50) {
+                if(playerX+25 > this.x && playerX+25 < this.x+5 && playerY+24 > this.y && playerY < this.y+24){ 
+                    playerX = this.x-25; 
+                }
+                if(playerX > this.x+20 && playerX < this.x+25 && playerY+24 > this.y && playerY < this.y+24){
+                    playerX = this.x+25;
+                }
+                if(playerY+25 > this.y && playerY+25 < this.y+5 && playerX+24 > this.x && playerX < this.x+24){
+                    playerY = this.y-25; 
+                    canjump = true; 
+                    gravity = 0;
+                }
+                if(playerY < this.y+24 && playerY > this.y+20 && playerX+24 > this.x && playerX < this.x+24){
+                    playerY = this.y+25; 
+                    gravity = 1;
+                }
+            }    
+    };
+    
+}//blocks
+    
+    {
+        
+    //making the cunstructor function for the blocks
+        var fallBlock = function(x, y){
+            this.x = x;
+            this.y = y;
+            this.falling = false;
+        };
+    //drawing and collision detecting the blocks
+        fallBlock.prototype.draw = function() {
+            fill(166, 163, 166);
+            rect(this.x, this.y, 25, 25);
+            fill(116, 113, 116);
+            triangle(this.x, this.y, this.x+12.5, this.y+12.5, this.x, this.y+25);
+            fill(96, 93, 96);
+            triangle(this.x, this.y+25, this.x+12.5, this.y+12.5, this.x+25, this.y+25);
+            if(this.falling) {
+                this.y+= 2;
+            }
+            
+            if(playerX > this.x-50 && playerX < this.x+50) {
+                if(playerX+25 > this.x && playerX+25 < this.x+5 && playerY+24 > this.y && playerY < this.y+24){ 
+                    playerX = this.x-25; 
+                }
+                if(playerX > this.x+20 && playerX < this.x+25 && playerY+24 > this.y && playerY < this.y+24){
+                    playerX = this.x+25;
+                }
+                if(playerY+25 > this.y && playerY+25 < this.y+5 && playerX+25 > this.x && playerX < this.x+25){
+                    playerY = this.y-25; 
+                    canjump = true; 
+                    gravity = 0;
+                    this.falling = true;
+                }
+                if(playerY < this.y+25 && playerY > this.y+20 && playerX+25 > this.x && playerX < this.x+25){
+                    playerY = this.y+25; 
+                    gravity = 1;
+                }
+            }    
+    };
+    
+}//falling blocks
+    
+    {
+        
+    //making the cunstructor function for the coins    
+        var coin = function(x, y) {
+            this.x = x;
+            this.y = y;
+            this.taken = false;
+    };
+    //drawing and collision detecting the coins
+        coin.prototype.draw = function() {
+            if(!this.taken) {
+                fill(237, 215, 14);
+                stroke(200, 180, 0);
+                ellipse(this.x+12.5, this.y+12.5, sin(radians(frameCount))*25, 25);
+                ellipse(this.x+12.5, this.y+12.5, sin(radians(frameCount))*15, 15);
+                
+                if(playerX+25 > this.x && playerX < this.x+25 && playerY+25 > this.y && playerY < this.y+25) {
+                    //println("hi");
+                    coinNum++;
+                    this.taken = true;
+                }
+            }
+    };
+        
+}//coins
+    
+    {
+        var spike = function(x, y) {
+            this.x = x;
+            this.y = y;
+            this.r = 0;
+        };
+        spike.prototype.draw = function() {
+            fill(150, 144, 150);
+            triangle(this.x, this.y+26, this.x+25, this.y+26, this.x+12.5, this.y);
+            fill(100, 94, 100);
+            triangle(this.x, this.y+26, this.x+12.5, this.y+26, this.x+12.5, this.y);
+            if(playerX+25 > this.x && playerX < this.x+25 && playerY+25 > this.y && playerY < this.y+25) {
+                playerX = 75;
+                playerY = 400;
+            }
+        };
+        
+}//spikes
+    
+    {
+        var portal = function(x, y) {
+            this.x = x;
+            this.y = y;
+        };
+        portal.prototype.draw = function() {
+            fill(0, 0, 255);
+            ellipse(this.x+12.5, this.y+12.5, 7+sin(radians(frameCount))*5, 7+sin(radians(frameCount))*5);
+            
+            fill(255, 255, 255, 100);
+            ellipse(this.x+12.5, this.y+12.5, 20+sin(radians(frameCount))*5, 20+sin(radians(frameCount))*5);
+            
+            ellipse(this.x+12.5, this.y+12.5, 15+sin(radians(frameCount))*5, 15+sin(radians(frameCount))*5);
+            
+        };
+    portal.prototype.collide = function() {
+        if(playerX+25 > this.x && playerX < this.x+25 && playerY+25 > this.y && playerY < this.y+25) {
+            firstTick = true;//resetting the levelDisplay
+            level++;//adding to the level
+            textDisplay++;
+            playerX = 75;
+            playerY = 400;
+            //destroying all current spikes, blocks, coins, ext
+            coins.splice(0); 
+            portals.splice(0); 
+            spikes.splice(0); 
+            trampolines.splice(0); 
+            blocks.splice(0); 
+            fallBlocks.splice(0); 
+            lavas.splice(0); 
+            gravity = 0;
+        }
+        
+    };
+    
+    
+    }//portals
+    
+    {
+        var trampoline = function(x, y) {
+            this.x = x;
+            this.y = y;
+        };
+        trampoline.prototype.draw = function() {
+            fill(242, 5, 242);
+            rect(this.x, this.y, 25, 25, 3);
+            if(playerX+25 > this.x && playerX < this.x+25 && playerY+25 > this.y && playerY < this.y+25) {
+                    gravity = -5;
+                }
+        };
+        
+    }//trampolines
+    
+    {
+        var lava = function(x, y) {
+            this.x = x;
+            this.y = y;
+        };
+        lava.prototype.draw = function() {
+            fill(17, 255, 0);
+            rect(this.x, this.y, 25, 25);
+            fill(0, 255, 0, 100);
+            ellipse(this.x+12.5, this.y+12.5, 60+sin(radians(frameCount))*20,
+            60+sin(radians(frameCount))*20);
+            if(playerX+25 > this.x && playerX < this.x+25 && playerY+25 > this.y && playerY < this.y+25) {
+                playerX = 75;
+                playerY = 400;
+            }
+        };
+    
+    }//corrosive lava
+    
+    {
+    
+var logoDone = false;
+var particals = [];
+var Partical = function(ex, ey, s, shape) {//original x, original y, eventual x, eventual y.
+    this.ox = null;
+    this.oy = null;
+    this.ex = ex;
+    this.ey = ey;
+    this.r = 0;
+    this.s = s;
+    this.rnd = random(0, 1);
+    if(this.rnd > 0.75) {
+        this.ox = -10;
+        this.oy = -10;
+    }else if(this.rnd > 0.5 && this.rnd <= 0.75) {
+        this.ox = 510;
+        this.oy = -10;
+    }else if(this.rnd > 0.25 && this.rnd <= 0.5) {
+        this.ox = 510;
+        this.oy = 510;
+    }else if(this.rnd <= 0.25) {
+        this.ox = -10;
+        this.oy = 510;
+    }
+    
+    if(this.rnd > random(0, 1)) {
+        this.sh = 1;
+    }else {
+        this.sh = 2;
+    }
+    this.x = this.ox;
+    this.y = this.oy;
+};
+Partical.prototype.run = function() {
+    pushMatrix();
+    translate(this.x, this.y);
+    fill(0, 255, 0, 150);
+    stroke(0, 255, 0, 150);
+    rect(-this.s/4, -this.s/4, this.s/2, this.s/2);
+    popMatrix();
+
+    this.r = degrees(atan2(this.ey - this.y, this.ex - this.x));
+    
+    if(dist(this.x, this.y, this.ex, this.ey) > 1) {
+        this.x += cos(radians(this.r)) * 2;
+        this.y += sin(radians(this.r)) * 2;
+    }
+    if(dist(this.x, this.y, this.ex, this.ey) < 2) {
+        this.x = this.ex;
+        this.y = this.ey;
+    }
+};
+
+var firstTick = true;
+var logoT = 0;
+var t = 0;
+var ts = 20;
+var p = -30;
+var l = 5;
+
+var Logo = function() {
+
+    var logopictures = [
+    
+        [
+            [0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,1,0,0,0,0,0,0,1,1,0,0,0,1,0,1,0,1,0,0,0,0,0,0],
+            [0,0,0,0,0,0,1,0,0,0,1,0,1,0,0,1,0,0,1,0,1,0,1,0,0,0,0,0,0],
+            [0,0,0,0,0,0,1,0,0,0,1,0,1,0,0,1,0,0,1,0,0,0,1,0,0,0,0,0,0],
+            [0,0,0,0,0,0,1,1,1,0,1,0,0,1,1,0,1,0,1,0,0,0,1,0,0,0,0,0,0],
+        ],
+        
+        [
+            [1,1,1,0,0,1,0,0,1,1,1,0,1,1,0,0,1,1,0,1,1,0,1,1,1,0,1,1,1],
+            [1,0,1,0,1,0,1,0,1,0,0,1,0,0,0,0,1,0,0,1,0,1,0,1,0,1,0,0,0],
+            [1,1,1,0,1,0,0,0,1,1,0,0,1,1,0,0,1,1,0,1,0,1,0,1,0,0,1,1,0],
+            [1,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,1,0,0,1,0,1,0,1,0,0,0,0,1],
+            [1,0,0,0,1,0,0,0,1,1,1,0,1,1,0,0,1,1,0,1,0,1,0,1,0,1,1,1,0],
+        ],
+        
+        [
+            [0,0,0,0,0,1,1,1,1,0,0,0,1,0,0,0,0,1,0,1,0,0,1,1,1,1,0,0,0],
+            [0,0,0,0,1,0,0,0,0,0,0,1,0,1,0,0,1,0,1,0,1,0,1,0,0,0,0,0,0],
+            [0,0,0,0,1,0,1,1,1,0,0,1,1,1,0,0,1,0,0,0,1,0,1,1,1,0,0,0,0],
+            [0,0,0,0,1,0,0,0,1,0,1,0,0,0,1,0,1,0,0,0,1,0,1,0,0,0,0,0,0],
+            [0,0,0,0,0,1,1,1,1,0,1,0,0,0,1,0,1,0,0,0,1,0,1,1,1,1,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,1,0,1,0,0,1,1,1,1,0,0,0],
+            [0,0,0,0,1,1,0,0,1,0,0,1,0,1,0,0,1,0,1,0,1,0,1,0,0,0,0,0,0],
+            [0,0,0,0,1,0,1,0,1,0,0,1,1,1,0,0,1,0,0,0,1,0,1,1,1,0,0,0,0],
+            [0,0,0,0,1,0,0,1,1,0,1,0,0,0,1,0,1,0,0,0,1,0,1,0,0,0,0,0,0],
+            [0,0,0,0,1,0,0,0,1,0,1,0,0,0,1,0,1,0,0,0,1,0,1,1,1,1,0,0,0],
+        ],
+    ];
+    
+    for(var i = 0; i < l; i++) {
+        for(var j = 0; j < 29; j++) {
+            if(firstTick) {
+                if(logopictures[logoT][i][j] === 1) {
+                    particals.push(new Partical(j*ts+p+ts/4,i*ts+200-ts/4,ts));
+                    particals.push(new Partical(j*ts+p-ts/4,i*ts+200-ts/4,ts));
+                    particals.push(new Partical(j*ts+p+ts/4,i*ts+200+ts/4,ts));
+                    particals.push(new Partical(j*ts+p-ts/4,i*ts+200+ts/4,ts));
+                }   
+            }
+        }
+    }
+    background(0, 255, 0);
+    fill(0, 0, 0, 255+-sin(radians(frameCount*1.25))*100);
+    rect(0, 0, 500, 500);
+    for(var i = 0; i < particals.length; i++) {
+        particals[i].run();
+    }
+    
+    firstTick = false;
+    t++;
+    if(t > 500) {
+        t = 0;
+        logoT++;
+        firstTick = true;
+        particals.splice(0);
+        if(logoT === 1) {
+            ts = 16;
+            p = 25;
+        }else if(logoT === 2) {
+            ts = 16;
+            p = 9;
+            l = 11;
+        }else if(logoT === 3) {
+           logoDone = true;
+        }
+        
+    }
+    
+    
+};
+
+}//logo
+
+    {
+        
+        var levels = [
+            
+            [
+            "ooofoooooooooooooooo",
+            "odofoooooooooooooooo",
+            "obofoooooooooooooooo",
+            "oeofoooooooooooooooo",
+            "ooofoooooooooooooooo",
+            "obofoooooooooooooooo",
+            "ooofoooooooooooooooo",
+            "oeofoooooooooooooooo",
+            "ooofoooooooooooooooo",
+            "ooofoooooooooooooooo",
+            "eeeaaaaaaaaaaaaaaaaa",
+            "bboooooooooooooooooo",            
+            "oooooooooooooooooooo",
+            "oocoooocobbbocooooob",
+            "eeaaaaaaaaaaaaaaeeea",
+            "aaoooooooooooooooooo",
+            "oooooooooooooooooooo",
+            "ooooooooooobocoooooo",
+            "aaaafooooooaaaoooeoo",
+            "oooooooaoooooooooooo",
+            ], //level 1
+            
+            [
+            "oooooooooooooooooooo",
+            "oooooooooooooooooooo",
+            "oooooooooooooooooood",
+            "oooooooooooboooooooo",
+            "oooooboooooafooooaoo",
+            "oooooaoooooooooooabo",
+            "oooooooooooooooooagg",
+            "aooooooooooooooooooo",
+            "ooooooooooooooobbooo",
+            "ooobooooooafoooggaae",
+            "oooafooooooooooooofo",
+            "oooooooooooooooooofo",
+            "oooooooooooooooooofo",
+            "oooooooooooooooooofe",
+            "oooooooooooooooooooo",
+            "ooooooooocoooocooooo",
+            "ooooooooofoooofooooo",
+            "ooooooooofbbbbfooooo",
+            "aaaaooooofaaaafooooe",
+            "oooooooooooooooooooo",
+            ], //level 2
+            
+            [
+            "oooooooooooooooooooo",
+            "oooooooooooooooooooo",
+            "oooooooooooooooooood",
+            "oooooooooooooooooooo",
+            "oooooooooooooooooooo",
+            "bbbbbbbbbboooooooooo",
+            "aaaaaaaaaaaaaaaaaaae",
+            "oooooooooooooooooooo",
+            "oooooooooooooooooooo",
+            "oooooobboooooooooboe",
+            "eeaagggggggagggaggaa",
+            "oooooooooooooooooooo",
+            "oooooooooooooooooooo",
+            "oooooooooboooobooooo",
+            "eeaggoaagggaaggoaaee",
+            "oooooooooooooooooooo",
+            "oooooooooooooooooooo",
+            "oooooooooooooooooooo",
+            "ggaaggaggaggaggaggee",
+            "ffffffffffffffffffoo",
+            ], //level 3
+            
+            [
+            "ooooooooooooooafoofo",
+            "ooooooooooooooafoddf",
+            "ooooooooooooooafooof",
+            "ooooaaggaggaaoafooof",
+            "eoooaoooooooaooafoof",
+            "ooooaoooooooaooafoof",
+            "ooooaooooobbaooooooo",
+            "eoooooooooafaaoooooo",
+            "ooooooooooooooaaaeea",
+            "oooooooooooooooooaab",
+            "bbboooooooooooooobbb",
+            "aaaooooooooooooooaaa",
+            "oooooooooooeoooooooo",
+            "ooooooooooooooogoooo",
+            "oooooooooooooogogooo",
+            "oooooooooooooooooooo",
+            "oooooooooooooooooooo",
+            "ooooobbooobboooboooo",
+            "aaaaggggaggggagggaee",
+            "ooooffffoffffofffooo",
+            ], //level 4
+            
+            [
+            "ooooooaooooooooooooo",
+            "ooooooaoaooooooooooo",
+            "ooooooaoabbbbbbbbbbb",
+            "ooooooaeaoooooobbabb",
+            "ooooooaoabbboooooobb",
+            "ooooooaoabbbbbbbbbbb",
+            "ooooooaeabbbbbbbaboa",
+            "ooooooaoaoooooobbbbb",
+            "ooooooaoaoooooobbbbb",
+            "ooooooaeaooooooobaaa",
+            "ooooooaoaoooooobbadd",
+            "ooooooaoabbbabbbbadd",
+            "ooooooaeaoooooobbabb",
+            "ooooooaoaoooooooaabb",
+            "ooooooaoaooooooooabb",
+            "ooooooaeaooooooooabb",
+            "ooooooooaooooooooooo",
+            "ooooooooaooooooooooo",
+            "oaaaaaeeaeeeeeeeeeee",
+            "oooooooooooooooooooo",
+            ], //level 5
+        ];
+        var levelDisplay = function() {        
+            //level = 1;
+            //background gradiant
+            for(var i= 0; i< 600; i+= 10) {
+                fill(50, 100, 12, i/60);
+                ellipse(250, 250, i, i);
+            }
+            if(firstTick){
+            firstTick = false;    
+//using for loops to draw the levels WAY easier
+                for(var i = 0; i < 20; i++) {
+                    for(var j = 0; j < 20; j++) {
+//pushing info into the arrays that store coins, blocks, ext... .
+                        if(levels[level][i][j] === "a") {
+                            blocks.push(new block(j*25, i*25));
+                        }if(levels[level][i][j] === "b") {
+                            coins.push(new coin(j*25, i*25));
+                        }if(levels[level][i][j] === "c") {
+                            spikes.push(new spike(j*25, i*25));
+                        }if(levels[level][i][j] === "d") {
+                            portals.push(new portal(j*25, i*25));
+                        }if(levels[level][i][j] === "e") {
+                            trampolines.push(new trampoline(j*25, i*25));
+                        }if(levels[level][i][j] === "f") {
+                            lavas.push(new lava(j*25, i*25));
+                        }if(levels[level][i][j] === "g") {
+                            fallBlocks.push(new fallBlock(j*25, i*25));
+                        }
+                    }
+                }
+            }
+            
+    //drawing the blocks and coins and other things using the arrays that we just added values into.
+            for(var i = 0; i < TsnowBalls.length; i++) {
+                TsnowBalls[i].draw();
+            }
+            for(var i = 0; i < coins.length; i++) {
+                coins[i].draw();
+            }
+            for(var i = 0; i < blocks.length; i++) {
+                blocks[i].draw();
+            }
+            for(var i = 0; i < spikes.length; i++) {
+                spikes[i].draw();
+            }
+            for(var i = 0; i < portals.length; i++) {
+                portals[i].draw();
+                portals[i].collide();
+            }
+            for(var i = 0; i < trampolines.length; i++) {
+                trampolines[i].draw();
+            }
+            for(var i = 0; i < fallBlocks.length; i++) {
+                fallBlocks[i].draw();
+            }
+            for(var i = 0; i < lavas.length; i++) {
+                lavas[i].draw();
+            }
+    //showing the text at the top of the screen, im using an array to store that data.
+            fill(255, 255, 255);
+            textSize(25);
+            //textAlign(CENTER, TOP);
+            text(levelText[textDisplay], 256, 26);
+            //textAlign(RIGHT, TOP);
+            textSize(20);
+            fill(219, 31, 3);
+            text("coins: "+coinNum, 89, 20);
+            
+};
+    
+
+}//level stuff
+  
+    draw = function() {
+        if(!logoDone) {
+            Logo();
+        }else {
+            background(40, 40, 40);
+            levelDisplay();
+            player();
+        }
+    };//game loop
+

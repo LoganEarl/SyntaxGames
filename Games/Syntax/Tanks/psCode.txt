@@ -1,0 +1,723 @@
+﻿/**
+*Based off Tank trouble, "https://tanktrouble.com"
+*version 0.1, NA.
+*version 0.2. "https://www.khanacademy.org/computer-programming/tanksfinished/5725555088982016?qa_expand_key=ag5zfmtoYW4tYWNhZGVteXJvCxIIVXNlckRhdGEiTHVzZXJfaWRfa2V5X2h0dHA6Ly9ub3VzZXJpZC5raGFuYWNhZGVteS5vcmcvNzRmOTk5ZTE1MjAyMGFiODc4ZjYxNDFhZDE5ZjY0YzkMCxIIRmVlZGJhY2sYgICAyOKOjAoM" Very long link! XD!
+*
+*
+* Why I made this game:
+* 
+*So, at my school there are two librarians, one is really nice, the other is *mean. He accuses us of playing games when we are studing for a test. Then he *always kicks us off. So we can only go into the computer lab the days he isn't *there. The other teacher, the nice one, will kick us off if we are playing *games. Though unlike the mean one, she doesn't try to find excuses to explain *why we are playing "games". But, she does allow playing games we programmed, *so I set to work on a game that my friends would be able to play together. *After about one month I was done(obviously I wasn't working on it every day). *So now we can play a tank game together without the librarian kicking us off. 
+* 
+*
+**/
+
+void setup(){
+	size(500,500);
+}
+
+void keyPressed() {
+    keys[keyCode] = true;
+}
+
+rectMode(CENTER);
+textAlign(CENTER);
+var ghosting1 = 0;
+var ghosting2 = 0;
+var keys = [];
+void keyPressed() {
+    keys[keyCode] = true;
+}
+keyReleased = function() {
+    keys[keyCode] = false;
+};
+
+var levels = [
+    [
+        [2,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0],
+        [1,1,1,0,0,1,1,1,1,1,0,1,1,1,1,1,0,0,1,1],
+        [0,0,1,0,0,1,0,0,0,1,0,1,0,0,0,0,0,0,0,0],
+        [0,0,1,0,0,1,0,0,0,1,0,1,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,1,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,1,0,0,0,0],
+        [0,0,1,0,0,0,0,0,0,1,0,1,0,0,0,1,0,0,0,0],
+        [0,0,1,0,0,0,0,0,0,1,0,1,1,1,1,1,0,0,1,1],
+        [0,0,1,1,1,1,1,0,0,1,4,1,0,0,0,0,0,0,0,0],
+        [0,0,1,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0],
+        [0,0,1,0,0,0,0,0,0,1,0,1,0,0,1,0,0,1,1,1],
+        [1,1,1,1,1,1,1,0,0,1,0,1,0,0,1,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,1,0,1,0,0,1,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,1,0,1,0,0,1,0,0,0,0,0],
+        [0,0,1,1,1,0,0,1,1,1,0,1,1,1,1,0,0,1,1,1],
+        [0,0,0,0,1,0,0,0,0,1,0,1,0,0,0,0,0,1,0,0],
+        [0,0,0,0,1,0,0,0,0,1,0,1,0,0,0,0,0,1,0,0],
+        [0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0],
+        [0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,3],
+    ],
+    [
+        [2,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,4],
+        [0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0],
+        [0,0,0,1,1,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0],
+        [0,0,0,1,1,1,0,0,0,1,1,1,1,1,0,0,1,0,0,0],
+        [0,0,0,0,1,1,1,0,0,0,0,0,0,1,0,0,1,1,0,0],
+        [0,0,0,0,0,1,1,1,0,0,0,0,0,1,0,0,0,0,0,0],
+        [0,0,0,0,0,0,1,1,1,0,0,0,0,1,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,1,1,0,0],
+        [0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,1,0,0],
+        [0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,1,0,0],
+        [0,0,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,1,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0],
+        [0,0,1,1,1,1,0,0,1,1,1,1,1,1,1,1,0,0,0,0],
+        [0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,1,0,0,0,0],
+        [0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,1,0,0,0,0],
+        [1,1,1,1,1,1,0,0,1,1,1,1,1,0,0,1,0,0,0,0],
+        [0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [4,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
+    ],
+    [
+        [0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0],
+        [2,4,3,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0],
+        [0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0],
+        [1,1,1,1,1,1,1,1,1,0,0,1,1,0,0,1,1,1,0,0],
+        [0,0,1,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0],
+        [0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0],
+        [0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0],
+        [0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0],
+        [0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0],
+        [1,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,0,1,0,0],
+        [0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0],
+        [0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0],
+        [1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,0,0,1,1,1],
+        [0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,1,0,0,0,0,1,0,0,1,0,0,1,1,1,1,0,0],
+        [0,0,0,1,0,0,0,0,1,0,0,1,0,0,1,0,0,1,0,0],
+        [0,0,1,1,0,1,1,1,1,0,0,1,1,1,1,0,0,1,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    ],
+    [
+        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+        [1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1],
+        [1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1],
+        [1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1],
+        [1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1],
+        [1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1],
+        [1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1],
+        [1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,3,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,2,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1],
+        [1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1],
+        [1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1],
+        [1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1],
+        [1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1],
+        [1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1],
+        [1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1],
+        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    ],
+    [
+        [2,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,1,0,0,0,0,0,1,0,0,0,0,1,0,0,0,1,1],
+        [0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,1,0,0,0,1],
+        [0,0,0,1,0,0,1,0,1,0,0,0,1,0,0,0,0,1,0,1],
+        [0,0,0,1,0,0,0,0,1,3,0,0,1,0,0,1,0,1,0,1],
+        [0,0,0,1,0,0,0,0,1,0,0,0,1,0,0,0,0,1,0,0],
+        [0,0,0,1,1,1,0,0,0,0,0,0,1,0,0,0,0,1,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,1,0,0],
+        [0,0,1,1,0,1,0,0,1,0,0,0,1,0,0,1,1,0,0,0],
+        [0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0],
+        [0,0,1,0,1,0,0,0,0,0,1,1,1,0,0,0,0,0,1,0],
+        [0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,1,0,0,1,0],
+        [1,0,0,0,1,0,0,1,1,0,0,1,0,0,0,0,0,0,1,0],
+        [1,0,1,0,0,0,0,1,0,0,1,1,0,0,1,0,0,0,1,0],
+        [0,0,1,0,1,0,0,1,0,0,0,1,1,0,0,0,0,0,1,0],
+        [0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0],
+        [0,0,1,0,1,0,0,1,0,1,1,0,1,0,1,0,0,0,0,0],
+        [0,0,0,0,0,0,0,1,0,0,0,0,0,1,4,1,1,1,0,0],
+        [0,0,1,0,1,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0],
+        [0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0],
+    ],
+    [
+        [2,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0],
+        [1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,1,1,1,1,1],
+        [0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,3],
+    ],
+    [
+        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+        [1,4,0,1,1,1,1,1,1,4,4,1,1,1,1,1,1,0,4,1],
+        [1,0,0,0,1,1,1,1,1,0,0,1,1,1,1,1,0,0,0,1],
+        [1,1,0,0,1,1,1,1,1,0,0,1,1,1,1,1,0,0,1,1],
+        [1,1,0,0,0,1,1,1,1,0,0,0,1,1,1,0,0,0,1,1],
+        [1,1,1,0,0,0,1,0,0,0,0,0,0,1,0,0,0,1,1,1],
+        [1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1],
+        [1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1],
+        [1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1],
+        [1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,1],
+        [1,1,1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1,1,1],
+        [1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,1],
+        [1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1],
+        [1,1,1,1,0,0,0,0,0,1,1,0,0,0,0,0,1,1,1,1],
+        [1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1],
+        [1,1,1,0,0,0,0,1,1,1,1,1,1,0,0,0,0,1,1,1],
+        [1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1],
+        [1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1],
+        [1,3,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,2,1],
+        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    ],
+    /*[
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    ], */ //empty level template
+    
+];
+//choosing a random level
+var level = round(random(0, levels.length-1));
+
+//object arrays
+var bullets = [];
+var blocks = [];
+
+{
+    
+var Bullet = function(x, y, type, angle, speed) {
+    
+    this.x = x;
+    this.y = y;
+    this.type = type;
+    this.angle = angle;
+    this.speed = speed;
+    this.life = 0;
+    this.bounceCount = 0;
+};
+Bullet.prototype.Run = function() {
+    
+    fill(0);
+    ellipse(this.x, this.y, 5, 5);
+    
+    this.x += cos(this.angle) * this.speed;
+    this.y += sin(this.angle) * this.speed;
+    
+    if(this.x < 0 || this.x > width) {    
+        this.angle = -this.angle -(PI/2 * 2);
+        this.bounceCount++;
+    }
+    if(this.y < 0 || this.y > height) {    
+        this.angle = -this.angle -(PI * 2);
+        this.bounceCount++;
+    }
+    for(var i = 0; i < blocks.length; i++) {
+        if(blocks[i].type !== "ground") {
+            if(this.x+3 > blocks[i].x-12.5 && this.x-3 < blocks[i].x+12.5 &&               this.y+3 > blocks[i].y-10 && this.y-2.5 < blocks[i].y+10) {
+                this.angle = -this.angle -(PI/2 * 2);
+                this.bounceCount++;
+            }
+            
+            if(this.y+3 > blocks[i].y-12.5 && this.y-3 < blocks[i].y+12.5 &&     this.x+3 > blocks[i].x-10 && this.x-3 < blocks[i].x+10) {
+                this.angle = -this.angle -(PI * 2);
+                this.bounceCount++;
+            }
+        }
+    }
+    this.life++;
+};
+
+}//bullet stuff
+
+{
+    
+var bigBullets = [];
+var powerUps = [];
+var PowerUp = function(x, y) {
+    this.x = x;
+    this.y = y;
+    this.type = round(random(1, 2));
+    this.taken = false;
+    //1 = big bullet
+    //2 = fast movement
+    //3 = gatling gun(not implemented yet)
+};
+
+PowerUp.prototype.Display = function() {
+    if(!this.taken) {
+        fill(214, 103, 39);
+        rect(this.x, this.y, 25, 25);
+        fill(179, 66, 6);
+        rect(this.x, this.y, 15, 15);
+        
+        if(this.type === 2) {
+            fill(255, 0, 0);
+            rect(this.x, this.y, 15, 7);
+            triangle(this.x+7.5, this.y, this.x, this.y-7, this.x, this.y+7);
+        }
+        if(this.type === 1) {
+            fill(0);
+            ellipse(this.x, this.y, 7, 7);
+        }
+    }
+};
+PowerUp.prototype.Run = function() {
+    this.Display();
+};
+
+var BigBullet = function(x, y, angle, life) {
+    this.x = x;
+    this.y = y;
+    this.angle = angle;
+    this.dead = false;
+    this.life = life;
+};
+BigBullet.prototype.Run = function() {
+    
+    if(!this.dead) {
+        fill(0);
+        ellipse(this.x, this.y, 10, 10);
+        
+        this.x += cos(this.angle);
+        this.y += sin(this.angle);
+        
+        if(this.x < 0 || this.x > width) {    
+            this.angle = -this.angle -(PI/2 * 2);
+        }
+        if(this.y < 0 || this.y > height) {    
+            this.angle = -this.angle -(PI * 2);
+        }
+        
+        for(var i = 0; i < blocks.length; i++) {
+            if(blocks[i].type !== "ground") {
+                if(this.x+5 > blocks[i].x-12.5 && this.x-5 < blocks[i].x+12.5 && this.y+5 > blocks[i].y-10 && this.y-5 < blocks[i].y+10) {
+                    this.angle = -this.angle -(PI/2 * 2);
+                }
+                
+                if(this.y+5 > blocks[i].y-12.5 && this.y-5 < blocks[i].y+12.5 && this.x+5 > blocks[i].x-10 && this.x-5 < blocks[i].x+10) {
+                    this.angle = -this.angle -(PI * 2);
+                }
+            }
+        }
+        
+        this.life++;
+    }
+    
+};
+
+}//powerup stuff
+
+{
+    
+var Player = function(x, y, type) {
+    this.x = x; 
+    this.y = y;
+    this.type = type;
+    this.powered = false;
+    this.powerUp = null;
+    this.bulletCount = 0;
+    this.shootTimer = 0;
+    this.health = 100;
+    this.angle = 0;
+    this.vel = 0;
+    this.timer = 0;
+};
+Player.prototype.Display = function() {
+    strokeWeight(2);
+    pushMatrix();
+    translate(this.x, this.y);
+    rotate(this.angle + PI/2);
+    
+    if(this.type === 1) {
+        fill(255, 0, 0);
+    }else if(this.type === 2) {
+        fill(0, 145, 0);
+    }
+    rect(0, 0, 25, 25, 2);
+    rect(0, -8, 5, 23);
+    ellipse(1, 0, 14, 14);
+    
+    popMatrix();
+    
+};
+Player.prototype.Move = function() {
+    
+    if(keys[LEFT] && this.type === 1) {
+        this.angle -= PI/90;
+    }else if(keys[RIGHT] && this.type === 1) {
+        this.angle += PI/90;
+    }
+    if(keys[UP] && this.type === 1) {
+        this.vel += 0.5;
+    }else if(keys[DOWN] && this.type === 1) {
+        this.vel-= 0.5;
+    }else {
+        this.vel *= 0.9;
+    }
+    
+    if(keys[65] && this.type === 2) {
+        this.angle-= PI/90;
+    }else if(keys[68] && this.type === 2) {
+        this.angle += PI/90;
+    }
+    if(keys[87] && this.type === 2) {
+        this.vel += 0.5;
+    }else if(keys[83] && this.type === 2) {
+        this.vel-= 0.5;
+    }else {
+        this.vel *= 0.9;
+    }
+    
+    this.x += cos(this.angle)*this.vel;
+    this.y += sin(this.angle)*this.vel;
+
+    if(this.powerUp !== 2) {
+        this.vel = constrain(this.vel, -1, 2);
+    }else {
+        this.vel = constrain(this.vel, -2, 3);
+    }
+    
+    this.x = constrain(this.x, 12.5, width-12.5);
+    this.y = constrain(this.y, 12.5, height-12.5);
+};
+Player.prototype.Shoot = function() {
+    
+    if(this.powerUp !== 1) {
+        
+        if(this.bulletCount < 5) {
+            
+            if(this.shootTimer === 0) {
+                
+                if(this.type === 1 && keys[77]) {
+                    
+                    bullets.push(new Bullet(this.x+cos(this.angle)*20, this.y                      +sin(this.angle)*20, 1, this.angle, 3));
+                    this.bulletCount++;
+                    this.shootTimer = 20;
+                    
+                }else if(this.type === 2 && keys[69]) {
+                    
+                    bullets.push(new Bullet(this.x+cos(this.angle)*20, this.y                      +sin(this.angle)*20, 2, this.angle, 3));
+                    this.bulletCount++;
+                    this.shootTimer = 20;
+                    
+                }
+                
+            }
+            
+        }
+        if(this.shootTimer > 0) {
+            this.shootTimer--;
+        }
+    
+    }else {
+        if(this.type === 1 && keys[77]) {
+            bigBullets.push(new BigBullet(this.x+cos(this.angle)*20, this.y+sin             (this.angle)*20, this.angle, 0));
+            this.powerUp = null;
+            this.powered = false;
+            this.shootTimer = 20;
+        }
+        else if(this.type === 2 && keys[69]) {
+            bigBullets.push(new BigBullet(this.x+cos(this.angle)*20, this.y+sin             (this.angle)*20, this.angle, 0));
+            this.powerUp = null;
+            this.powered = false;
+            this.shootTimer = 20;
+        }
+    }
+    
+};
+Player.prototype.Run = function() {
+    
+    this.Move();
+    this.Shoot();
+    this.Display();
+    
+};
+
+var player1 = new Player(250, 250, 1);
+var player2 = new Player(250, 250, 2);
+
+}//player stuff
+
+{
+    
+var Block = function(x, y, type) {
+    this.x = x;
+    this.y = y;
+    this.type = type;
+};
+Block.prototype.Run = function() {
+    if(this.type === "ground") {
+        stroke(166, 54, 7);
+        fill(166, 54, 7);
+        rect(this.x, this.y, 24, 24);
+        fill(89, 86, 86);
+        rect(this.x-5, this.y+3, 5, 5);
+        rect(this.x+7, this.y-1, 3, 6);
+        stroke(0);
+    }else if(this.type === "block") {
+        strokeWeight(2);
+        fill(20, 92, 17);
+        rect(this.x, this.y, 23, 25);
+        line(this.x, this.y-11.5, this.x, this.y+11.5);
+        line(this.x-11.5, this.y, this.x+11.5, this.y);
+        
+        {
+            
+        if(player1.x+12.5 > this.x-12.5 && player1.x+12.5 < this.x-7.5 && player1.y+11.5 > this.y-11.5 && player1.y-11.5 < this.y+11.5) {
+            player1.x = this.x-25;
+        }else if(player1.x-12.5 < this.x+12.5 && player1.x-7.5 > this.x+12.5 && player1.y+11.5 > this.y-12.5 && player1.y-11.5 < this.y+11.5) {
+            player1.x = this.x+25;
+        }if(player1.x-12.5 < this.x+12.5 && player1.x+12.5 > this.x-12.5 && player1.y+12.5 > this.y-12.5 && player1.y+12.5 < this.y-7.5) {
+            player1.y = this.y-25;
+        }if(player1.x-12.5 < this.x+12.5 && player1.x+12.5 > this.x-12.5 && player1.y-12.5 < this.y+12.5 && player1.y-12.5 > this.y+7.5) {
+            player1.y = this.y+24;
+        }
+        
+        if(player2.x+12.5 > this.x-12.5 && player2.x+12.5 < this.x-7.5 && player2.y+11.5 > this.y-11.5 && player2.y-11.5 < this.y+11.5) {
+            player2.x = this.x-25;
+        }else if(player2.x-12.5 < this.x+12.5 && player2.x-7.5 > this.x+12.5 && player2.y+11.5 > this.y-12.5 && player2.y-11.5 < this.y+11.5) {
+            player2.x = this.x+25;
+        }if(player2.x-12.5 < this.x+12.5 && player2.x+12.5 > this.x-12.5 && player2.y+12.5 > this.y-12.5 && player2.y+12.5 < this.y-7.5) {
+            player2.y = this.y-25;
+        }if(player2.x-12.5 < this.x+12.5 && player2.x+12.5 > this.x-12.5 && player2.y-12.5 < this.y+12.5 && player2.y-12.5 > this.y+7.5) {
+            player2.y = this.y+24;
+        }
+        
+    }//collisions
+    
+    }
+};
+
+}//block stuff
+
+var firstTick = true;// very important variable!!
+
+{
+    var Reset = function() {
+        player1.powerUp = null;
+        player1.powered = false;
+        
+        player2.powerUp = null;
+        player2.powered = false;
+        
+        blocks.splice(0);
+        for(var g = 0; g < bigBullets.length; g++) {
+            bigBullets[g].dead = true;
+        }
+        for(var j = 0; j < bullets.length; j++) {
+            bullets[j].life = 500;
+        }
+        for(var f = 0; f < powerUps.length; f++) {
+            powerUps[f].taken = true;
+        }
+        firstTick = true;
+        level = round(random(0, levels.length-1));
+        
+    };
+}//reset level function
+
+{
+var ghosting = 255;
+var Display = function() {
+    
+    background(255);
+    
+    for(var i = 0; i < blocks.length; i++) {
+        blocks[i].Run();
+    }
+    
+    for(var i = 0; i < bullets.length; i++) {
+        
+        bullets[i].Run();
+        
+        if(dist(player1.x, player1.y, bullets[i].x, bullets[i].y) < 12.5) {
+            Reset();
+            ghosting2 = 0;
+            ghosting1 = 255;
+        }
+        
+        if(dist(player2.x, player2.y, bullets[i].x, bullets[i].y) < 12.5) {
+            Reset();
+            ghosting1 = 0;
+            ghosting2 = 255;
+        }
+        
+        if(bullets[i].life >= 500 || bullets[i].bounceCount > 50) {
+            
+            if(bullets[i].type === 1) {
+                player1.bulletCount--;
+            }else if(bullets[i].type === 2) {
+                player2.bulletCount--;
+            }
+            
+            bullets.splice(i, 1);
+            
+        }
+        
+    }
+    
+    for(var i = 0; i < bigBullets.length; i++) {
+        bigBullets[i].Run();
+        if(!this.dead) {
+            if(dist(player1.x, player1.y, bigBullets[i].x, bigBullets[i].y) <              12.5) {
+                Reset();
+                ghosting2 = 0;
+                ghosting1 = 255;
+                
+            }
+            
+            if(dist(player2.x, player2.y, bigBullets[i].x, bigBullets[i].y) <              12.5) {
+                Reset();
+                ghosting1 = 0;
+                ghosting2 = 255;
+            }
+            
+            if(bigBullets[i].life >= 300) {
+                
+                for(var j = 0; j < 360; j += 45) {
+                    bullets.push(new Bullet(bigBullets[i].x, bigBullets[i].y,                      null, j, 2));
+                }
+                
+                bigBullets.splice(i, 1);
+                
+            }
+        }
+        //if(bigBullets[i].dead) {
+        //     bigBullets.splice(i, 1);
+        //}
+    }
+    
+    for(var i = 0; i < 20; i++) {
+        for(var j = 0; j < 20; j++) {
+            if(firstTick) {
+                if(levels[level][i][j] === 0) {
+                    blocks.push(new Block(j*25+12.5, i*25+12.5, "ground"));
+                }
+                if(levels[level][i][j] === 1) {
+                    blocks.push(new Block(j*25+12.5, i*25+12.5, "block"));
+                }
+                if(levels[level][i][j] === 2) {
+                    player1.y = i*25+12.5;
+                    player1.x = j*25+12.5;
+                    blocks.push(new Block(j*25+12.5, i*25+12.5, "ground"));
+                }
+                if(levels[level][i][j] === 3) {
+                    player2.y = i*25+12.5;
+                    player2.x = j*25+12.5;
+                    blocks.push(new Block(j*25+12.5, i*25+12.5, "ground"));
+                }
+                if(levels[level][i][j] === 4) {
+                    powerUps.push(new PowerUp(j*25+12.5, i*25+12.5));
+                    blocks.push(new Block(j*25+12.5, i*25+12.5, "ground"));
+                }
+            }
+        }
+    }
+    
+    firstTick = false;
+    
+    for(var i = 0; i < powerUps.length; i++) {
+        
+        powerUps[i].Run();
+        
+        if(!powerUps[i].taken) {
+            
+            if(dist(player1.x, player1.y, powerUps[i].x, powerUps[i].y) < 25 && !player1.powered) {                 
+                player1.powerUp = powerUps[i].type;
+                powerUps[i].taken = true;
+                
+            }
+            if(dist(player2.x, player2.y, powerUps[i].x, powerUps[i].y) < 25 && !player2.powered) { 
+                player2.powerUp = powerUps[i].type;
+                powerUps[i].taken = true;
+                
+            }
+            
+        }
+        
+    }
+    
+    player1.Run();
+    player2.Run();
+    
+    stroke(255, 255, 255, ghosting1);
+    fill(255, 255, 255, ghosting1);
+    rect(width/2, height/2, width, height);
+    
+    stroke(255, 255, 255, ghosting2);
+    fill(255, 255, 255, ghosting2);
+    rect(width/2, height/2, width, height);
+    
+    stroke(255, 255, 255, ghosting);
+    fill(255, 255, 255, ghosting);
+    rect(width/2, height/2, width, height);
+    
+    stroke(0);
+    textSize(50);
+    
+    if(ghosting1 > 0) {
+        
+        fill(0, 145, 0, ghosting1);
+        text("Green Wins", width/2, height/2);
+        ghosting1--;
+        
+    }
+    
+    if(ghosting2 > 0) {
+        
+        fill(255, 0, 0, ghosting2);
+        text("Red Wins", width/2, height/2);
+        ghosting2--;
+        
+    }
+    if(ghosting > 0) {
+        textSize(40);
+        fill(0, 0, 0, ghosting);
+        text("CONTROLS:\n\nRed:\nArrow keys, M to shoot,\n\nGreen:\nWASD, E to shoot.", 250, 100);
+        ghosting-= 0.5;
+    }
+};
+
+}//the draw function pretty much, 
+
+{
+    
+draw = function() {
+    Display();
+};
+
+}//real draw function
